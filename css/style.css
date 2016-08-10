@@ -9,6 +9,8 @@ html, body{
 	background: #ffffff;
 }
 body a{
+	color:orange;
+	font-weight:bold;
 	transition:0.5s all;
 	-webkit-transition:0.5s all;
 	-moz-transition:0.5s all;
