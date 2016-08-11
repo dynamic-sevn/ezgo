@@ -1,125 +1,145 @@
-(function($) { 
-	"use strict";
-	
-(function($) {
-$(function() {
-jQuery('#loopedSlider').prepend("<a href='#' class='previous'>&lt;</a><a href='#' class='next'>&gt;</a>");
-	jQuery('#loopedSlider').loopedSlider({
-		autoHeight: 500
-	});
-});
-});
+/***Header Effect**/
+var $head = $( '#ha-header' );
+			$( '.ha-waypoint' ).each( function(i) {
+				var $el = $( this ),
+					animClassDown = $el.data( 'animateDown' ),
+					animClassUp = $el.data( 'animateUp' );
+
+				$el.waypoint( function( direction ) {
+					if( direction === 'down' && animClassDown ) {
+						$head.attr('class', 'ha-header ' + animClassDown);
+					}
+					else if( direction === 'up' && animClassUp ){
+						$head.attr('class', 'ha-header ' + animClassUp);
+					}
+				}, { offset: '100%' } );
+			} );
 
 
 
-// for banner height js
-var windowWidth = $(window).width();
-    var windowHeight =$(window).height();
-    $('.banner').css({'width':windowWidth ,'height':windowHeight -"60" });
-	
-	
-
-
-// for portfoli filter jquary
-$(window).load(function(){
-    var $container = $('.portfolioContainer');
-    $container.isotope({
-        filter: '*',
-        animationOptions: {
-            duration: 750,
-            easing: 'linear',
-            queue: false
+/***isotope***/
+$(function(){      
+      var $container = $('#filter_container');
+      $container.isotope({
+        itemSelector : '.element'
+      });  
+      var $optionSets = $('#filter_header .option-set'),
+          $optionLinks = $optionSets.find('a');
+      $optionLinks.click(function(){
+        var $this = $(this);
+        // don't proceed if already selected
+        if ( $this.hasClass('selected') ) {
+          return false;
         }
-    });
- 
-    $('.portfolioFilter a').click(function(){
-        $('.portfolioFilter .current').removeClass('current');
-        $(this).addClass('current');
- 
-        var selector = $(this).attr('data-filter');
-        $container.isotope({
-            filter: selector,
-            animationOptions: {
-                duration: 750,
-                easing: 'linear',
-                queue: false
-            }
-         });
-         return false;
-    }); 
-});
-
-
-
-
-// for portfoli lightbox jquary
-jQuery(function($) {
-	var $chosenSheet,
-	$stylesheets = $( "a[id^=theme-]" );
-	
-	// run rlightbox
-	$( ".lb" ).rlightbox();
-	$( ".lb_title-overwritten" ).rlightbox({overwriteTitle: true});
-});
-
-
-
-
-
-// for skill chat jquary
-$(document).ready(function(e) {
-//var windowBottom = $(window).height();
-var index=0;
-$(document).scroll(function(){
-	var top = $('.technical').height()-$(window).scrollTop();
-	console.log(top)
-	if(top<-300){
-		if(index==0){	
-			
-			$('.chart').easyPieChart({
-				easing: 'easeOutBounce',
-				onStep: function(from, to, percent) {
-					$(this.el).find('.percent').text(Math.round(percent));
-				}
-			});
-			
-		}
-		index++;
-	}
-})
-//console.log(nagativeValue)
-});
-
-
-
-
-// Somth page scroll
-$(function() {
-  $('a[href*=#]:not([href=#])').click(function() {
-    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-      if (target.length) {
-        $('html,body').animate({
-          scrollTop: target.offset().top -60
-        }, 1000);
+        var $optionSet = $this.parents('.option-set');
+        $optionSet.find('.selected').removeClass('selected');
+        $this.addClass('selected');
+        // make option object dynamically, i.e. { filter: '.my-filter-class' }
+        var options = {},
+            key = $optionSet.attr('data-option-key'),
+            value = $this.attr('data-option-value');
+        // parse 'false' as false boolean
+        value = value === 'false' ? false : value;
+        options[ key ] = value;
+        if ( key === 'layoutMode' && typeof changeLayoutMode === 'function' ) {
+          // changes in layout modes need extra logic
+          changeLayoutMode( $this, options )
+        } else {
+          // otherwise, apply new options
+          $container.isotope( options );
+        }        
         return false;
-      }
-    }
-  });
-});
-
-
-
-
-// chart loding
-$(window).load(function() {
+      });      
+    });
 	
-	var chart = window.chart = $('.chart').data('easyPieChart');
-	$('.js_update').on('click', function() {
-		chart.update(Math.random()*100);
-	});
+	
+	
+	
+	
+	
+	
+	
+
+
+$(document).ready(function() {
+	
+		/*******Nice Scroll******/	  
+		$("html").niceScroll();  // The document page (body)
+		$(".scroller").getNiceScroll().resize()
+
+  		<!--flexs lider--> 	
+		 $('.flexslider').flexslider({
+		        animation: "fade",
+		        start: function(slider){
+		          $('body').removeClass('loading');
+		        }
+			});
+
+
+		/***Hover Effect with mask**/		
+		$('span.mask').hover(
+			  function () {
+          $(this).siblings('a img').addClass('hovering');
+          $(this).parent().siblings(".portfolio-title").children("h4").stop().animate({
+              top: -20
+            }, 350);
+			  }, 
+			  function () {
+          $(this).siblings('a img').removeClass('hovering');
+          $(this).parent().siblings(".portfolio-title").children("h4").stop().animate({
+              top: 0
+            }, 350);
+			  }
+	);
+	
+			
+     /****Smooth Scrolling***/  
+        $('a[href*=#]:not([href=#])').click(function() {
+          if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') 
+            || location.hostname == this.hostname) {
+
+            var target = $(this.hash);
+            target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+            if (target.length) {
+              $('html,body').animate({
+                scrollTop: target.offset().top
+              }, 500);
+              return false;
+            }
+          }
+        });
+      
+	  
+	  
+    <!--contact page validator--> 	
+	$("#passion_form").validate();	
+		  
+	
+			  
+    /*****google map*****/
+	  var map;
+      map = new GMaps({
+        el: '#map',
+        lat: -12.043333,
+        lng: -77.028333,
+        zoomControl : true,
+        zoomControlOpt: {
+            style : 'SMALL',
+            position: 'TOP_LEFT'
+        },
+        panControl : true,
+        streetViewControl : false,
+        mapTypeControl: true,
+        overviewMapControl: false
+      });
+	  
+
+	
+	
+	
+	
+		  
+	  
+
 });
 
-
-}(jQuery));
